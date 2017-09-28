@@ -14,6 +14,8 @@ import java.util.Random;
  */
 public class Shuffle {
   
+  private static final String NO_INPUT_MESSAGE = "No size specified; using default value (%d).%n";
+  private static final String BAD_INPUT_MESSAGE = "Could not parse \"%s\" as an int; using default value (%d).%n";
   private static final int DEFAULT_SIZE = 50;
 
   /**
@@ -25,12 +27,35 @@ public class Shuffle {
    *                (default = 50).
    */
   public static void main(String[] args) {
-    int size = (args.length > 0) ? Integer.parseInt(args[0]) : DEFAULT_SIZE;
+    int size = DEFAULT_SIZE;
+    try {
+      size = getSize(args);
+    } catch (NumberFormatException ex) {
+      // this tells my program to just ignore and use the default condition when 
+      // encountering this type of Exception
+      System.out.printf(
+          BAD_INPUT_MESSAGE, 
+          args[0], DEFAULT_SIZE);
+    } catch (ArrayIndexOutOfBoundsException ex) {
+      System.out.printf(NO_INPUT_MESSAGE, DEFAULT_SIZE);
+    }
+    
     int[] values = generate(size);
     System.out.println(Arrays.toString(values));
     shuffle(values);
     System.out.println(Arrays.toString(values));
-    
+  }
+
+  /**
+   * 
+   * @param args
+   * @return
+   * @throws ArrayIndexOutOfBoundsException
+   * @throws NumberFormatException
+   */
+  private static int getSize(String[] args) 
+      throws ArrayIndexOutOfBoundsException, NumberFormatException {
+    return Integer.parseInt(args[0]);
   }
   
   private static int[] generate(int size) {
@@ -42,7 +67,7 @@ public class Shuffle {
   }
   
   /**
-   * Uses the Fisher-Yates algorithm to shuffle teh <code>data</code>
+   * Uses the Fisher-Yates algorithm to shuffle the <code>data</code>
    * array in place.
    * 
    * @param data int values to be shuffled.
